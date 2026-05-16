@@ -3,6 +3,8 @@ import uuid
 from fastapi import UploadFile
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+from .embedding_service import embedding_model
+from langchain_chroma import Chroma
 
 UPLOAD_DIR="temp_uploads"
 
@@ -21,22 +23,27 @@ async def process_pdf(file:UploadFile):
         with open(file_path,"wb") as buffer:
             content=await file.read()
             buffer.write(content)
+
+        #Loading docs
         loader=PyPDFLoader(file_path)
         documents=loader.load()
 
+        #Chunking docs
         chunks=chunk_texts(documents)
 
+        #Store in Chroma
+        vector_store=Chroma.from_documents(
+            documents=chunks,
+            embedding=embedding_model,
+            persist_directory="chroma_db",
+            collection_name="research_paper"
+        )
         preview_text=(documents[0].page_content[:500])
 
         return {
             "message":"PDF Uploaded successfully.",
             "total_pages":len(documents),
-            "total_chuks":len(chunks),
-            "preview":preview_text,
-            "chunk_preview":[
-                chunk.page_content[:200]
-                for chunk in chunks[:3]
-            ]
+            "total_chuks":len(chunks)
         }
     except Exception as e:
         return {
@@ -61,5 +68,5 @@ def chunk_texts(doc):
             ]
         )
     chunks=splitter.split_documents(doc)
-        
+
     return chunks

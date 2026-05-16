@@ -4,3 +4,6 @@ python-multipart
 langchain-huggingface
 fastapi
 uvicorn
+chromadb
+langchain-chroma
+sentence-transformers
