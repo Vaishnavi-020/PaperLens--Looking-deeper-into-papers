@@ -2,3 +2,5 @@ langchain-community
 pypdf 
 python-multipart
 langchain-huggingface
+fastapi
+uvicorn
