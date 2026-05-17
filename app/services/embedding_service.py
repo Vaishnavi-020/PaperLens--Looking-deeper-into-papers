@@ -6,5 +6,5 @@ os.environ["SSL_CERT_FILE"] = certifi.where()
 
 
 embedding_model=HuggingFaceEmbeddings(
-    model="sentence-transformers/all-MiniLM-L6-v2"
+    model="BAAI/bge-small-en-v1.5"
         )

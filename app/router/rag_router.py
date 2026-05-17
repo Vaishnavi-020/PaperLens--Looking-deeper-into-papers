@@ -8,3 +8,4 @@ async def upload_pdf(file:UploadFile=File(...)):
     result=await process_pdf(file)
 
     return result
+
