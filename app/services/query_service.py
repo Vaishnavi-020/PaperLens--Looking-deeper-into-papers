@@ -1,6 +1,7 @@
 from .embedding_service import embedding_model
 from app.schema.query_schema import QueryRequest
 from langchain_chroma import Chroma
+from app.services.llm_service import generate_answer
 
 def ask_query(query:QueryRequest):
     #Store in Chroma
@@ -33,11 +34,16 @@ def ask_query(query:QueryRequest):
         if "table" in text and len(text.split())<300:
             continue
         filtered_results.append(doc)
-    filtered_results=filtered_results[:5]
-    response=[]
-    for result in filtered_results:
-        response.append({"content":result.page_content,
-                         "page":result.metadata.get("page",'Unknown')})
+    filtered_results=filtered_results[:3]
+    context="\n\n".join([doc.page_content for doc in filtered_results])
+    response= generate_answer(
+        question=query,
+        context=context
+    )
+    # response=[]
+    # for result in filtered_results:
+    #     response.append({"content":result.page_content,
+    #                      "page":result.metadata.get("page",'Unknown')})
 
     return response
         
