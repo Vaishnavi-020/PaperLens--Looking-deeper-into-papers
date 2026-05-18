@@ -39,48 +39,19 @@ async def process_pdf(file:UploadFile):
         #Chunking docs
         chunks=chunk_texts(documents)
 
-        #Store in Chroma
+        #STORE EMBEDDINGS
         vector_store=Chroma.from_documents(
             documents=chunks,
             embedding=embedding_model,
             persist_directory="chroma_db",
             collection_name="research_paper"
-        )
-
-        retriever=vector_store.as_retriever(
-            search_type="mmr",
-            search_kwargs={"k":10,
-                           "fetch_k":20,
-                           "lambda_mult": 0.5}
-        )
-
-        query="How does multi-head attention work?"
-        results=retriever.invoke(query)
-        filtered_results=[]
-        for doc in results:
-            text=doc.page_content.lower()
-            noise_patterns=[
-                "figure",
-                "visualization",
-                "<pad>",
-                "<eos>",
-                "layer5"
-            ]
-            if any(pattern in text for pattern in noise_patterns):
-                continue
-            if "table" in text and len(text.split())<300:
-                continue
-            filtered_results.append(doc)
-        filtered_results=filtered_results[:5]
-            
-        for i,doc in enumerate(filtered_results):
-            print(f"\n-----Result------{i+1}")
-            print(doc.page_content[:600])
+                )
+       
         return {
-            "message":"PDF Uploaded successfully.",
-            "total_pages":len(documents),
-            "total_chuks":len(chunks)
-        }
+                "message":"PDF Uploaded successfully.",
+                "total_pages":len(documents),
+                "total_chunks":len(chunks)
+            }
     except Exception as e:
         return {
             "error":str(e)
@@ -104,16 +75,5 @@ def chunk_texts(doc):
             ]
         )
     chunks=splitter.split_documents(doc)
-
-    # print(chunks[4].page_content)
-    # print("\n")
-    # print(chunks[5].page_content)
-    # print("\n")
-    # print(chunks[6].page_content)
-    # print("\n")
-    # print(chunks[7].page_content)
-    # print("\n")
-    # print(chunks[8].page_content)
-    # print("\n")
 
     return chunks
