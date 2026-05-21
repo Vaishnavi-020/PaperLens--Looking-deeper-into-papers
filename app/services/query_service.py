@@ -35,6 +35,7 @@ def ask_query(query:QueryRequest):
             continue
         filtered_results.append(doc)
     filtered_results=filtered_results[:3]
+    # print(filtered_results)
     context="\n\n".join([doc.page_content for doc in filtered_results])
     response= generate_answer(
         question=query,

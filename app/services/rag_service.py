@@ -4,8 +4,10 @@ import uuid
 from fastapi import UploadFile
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_core.documents import Document
 from .embedding_service import embedding_model
 from langchain_chroma import Chroma
+import re
 
 UPLOAD_DIR="temp_uploads"
 
@@ -36,8 +38,10 @@ async def process_pdf(file:UploadFile):
         loader=PyPDFLoader(file_path)
         documents=loader.load()
 
+        sections=split_by_sections(documents)
+
         #Chunking docs
-        chunks=chunk_texts(documents)
+        chunks=chunk_texts(sections)
 
         #STORE EMBEDDINGS
         vector_store=Chroma.from_documents(
@@ -76,4 +80,63 @@ def chunk_texts(doc):
         )
     chunks=splitter.split_documents(doc)
 
+    # print(chunks[15])
+    # print('\n')
+    # print(chunks[16])
+    # print('\n')
+    # print(chunks[17])
+    # print('\n')
+    # print(chunks[18])
+    # print('\n')
+    # print(chunks[19])
+    # print('\n')
+    # print(chunks[20])
+    # print('\n')
+
     return chunks
+
+
+from langchain_core.documents import Document
+
+def split_by_sections(docs):
+    heading_pattern = r"^\d+(\.\d+)?\s+[A-Z].*"
+
+    sections = []
+    current_heading = "Unknown"
+    current_text = ""
+
+    for doc in docs:
+        lines = doc.page_content.split("\n")
+
+        for line in lines:
+            line = line.strip()
+
+            if re.match(heading_pattern, line):
+
+                # Save previous section
+                if current_text.strip():
+                    sections.append(
+                        Document(
+                            page_content=current_text.strip(),
+                            metadata={"heading": current_heading
+                                      }
+                        )
+                    )
+
+                current_heading = line
+                current_text = ""
+
+            else:
+                current_text += " " + line
+
+    # Save last section
+    if current_text.strip():
+        sections.append(
+            Document(
+                page_content=current_text.strip(),
+                metadata={"heading": current_heading
+                          }
+            )
+        )
+
+    return sections

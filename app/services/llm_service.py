@@ -13,15 +13,27 @@ llm=HuggingFaceEndpoint(model="deepseek-ai/DeepSeek-V4-Pro",
 model=ChatHuggingFace(llm=llm)
 
 prompt=PromptTemplate(
-    template='''You are a helpful assistant.
-    Answer the given question only from the context provided. 
-    If provided context is not enough for the question, just say: "I could not find this in the uploaded paper."
-    \n
-    Question:
-    {question}
-    \n
-    Context:
-    {context}''',
+    template = """
+You are an expert research assistant.
+
+Use ONLY the provided context to answer.
+
+Guidelines:
+- For "why" questions, explain the reasoning clearly.
+- For summary requests, summarize the relevant section.
+- If information exists across multiple chunks,
+combine them into one coherent answer.
+- If the answer is not present, say:
+"I could not find this in the paper."
+
+Context:
+{context}
+
+Question:
+{question}
+
+Answer:
+""",
     input_variables=['question','context']
 )
 
