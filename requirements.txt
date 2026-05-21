@@ -7,3 +7,5 @@ uvicorn
 chromadb
 langchain-chroma
 sentence-transformers
+sqlalchemy
+psycopg2-binary
