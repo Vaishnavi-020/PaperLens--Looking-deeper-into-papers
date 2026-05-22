@@ -13,20 +13,21 @@ UPLOAD_DIR="temp_uploads"
 
 os.makedirs(UPLOAD_DIR,exist_ok=True)
 
-CHROMA_PATH='./chroma_db'
+# CHROMA_PATH='./chroma_db'
 
 # UPLOADING PDF
 async def process_pdf(file:UploadFile):
 
-    if os.path.exists(CHROMA_PATH):
-        shutil.rmtree(CHROMA_PATH)
-        print("chroma deleted")
+    # if os.path.exists(CHROMA_PATH):
+    #     shutil.rmtree(CHROMA_PATH)
+    #     print("chroma deleted")
 
     if not file.filename.endswith(".pdf"):
         return{
             "error":"Only pdf files allowed"
         }
     unique_filename=f"{uuid.uuid4()}.pdf"
+    session_id=str(uuid.uuid4())
     file_path=os.path.join(UPLOAD_DIR,unique_filename)
 
     try:
@@ -48,13 +49,12 @@ async def process_pdf(file:UploadFile):
             documents=chunks,
             embedding=embedding_model,
             persist_directory="chroma_db",
-            collection_name="research_paper"
+            collection_name=session_id
                 )
        
         return {
                 "message":"PDF Uploaded successfully.",
-                "total_pages":len(documents),
-                "total_chunks":len(chunks)
+                "session_id":session_id
             }
     except Exception as e:
         return {

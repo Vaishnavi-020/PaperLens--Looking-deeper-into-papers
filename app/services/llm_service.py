@@ -1,4 +1,4 @@
-from langchain_huggingface import ChatHuggingFace,HuggingFaceEndpoint
+from langchain_groq import ChatGroq
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 import os
@@ -6,11 +6,11 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-llm=HuggingFaceEndpoint(model="deepseek-ai/DeepSeek-V4-Pro",
-                        task="Text-generation",
-                        huggingfacehub_api_token=os.getenv("HUGGINGFACE_ACCESS_TOKEN"))
-
-model=ChatHuggingFace(llm=llm)
+llm = ChatGroq(
+    model="llama-3.3-70b-versatile",
+    api_key=os.getenv("GROQ_API_KEY"),
+    temperature=0.3
+)
 
 prompt=PromptTemplate(
     template = """
@@ -39,7 +39,7 @@ Answer:
 
 parser=StrOutputParser()
 
-chain= prompt | model | parser
+chain= prompt | llm | parser
 
 def generate_answer(question:str, context:str):
     response=chain.invoke({"question":question,

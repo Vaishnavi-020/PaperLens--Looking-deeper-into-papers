@@ -1,7 +1,7 @@
 langchain-community
 pypdf 
 python-multipart
-langchain-huggingface
+langchain-groq
 fastapi
 uvicorn
 chromadb
@@ -9,3 +9,4 @@ langchain-chroma
 sentence-transformers
 sqlalchemy
 psycopg2-binary
+langchain_huggingface
