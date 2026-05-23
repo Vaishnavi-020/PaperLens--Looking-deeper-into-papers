@@ -80,19 +80,6 @@ def chunk_texts(doc):
         )
     chunks=splitter.split_documents(doc)
 
-    # print(chunks[15])
-    # print('\n')
-    # print(chunks[16])
-    # print('\n')
-    # print(chunks[17])
-    # print('\n')
-    # print(chunks[18])
-    # print('\n')
-    # print(chunks[19])
-    # print('\n')
-    # print(chunks[20])
-    # print('\n')
-
     return chunks
 
 

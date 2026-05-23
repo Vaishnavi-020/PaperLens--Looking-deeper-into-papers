@@ -10,7 +10,7 @@ def ask_query(query:QueryRequest,db:Session):
     vector_store=Chroma(
         embedding_function=embedding_model,
         persist_directory="chroma_db",
-        collection_name="research_paper"
+        collection_name=query.session_id
     )
 
     retriever=vector_store.as_retriever(
